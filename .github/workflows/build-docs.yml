@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "master" # Trigger on version tags
+  workflow_dispatch:
 
 jobs:
   build-docs:
@@ -11,7 +12,11 @@ jobs:
     # it is automatically triggered by the update-version job via the commit
     # made in the update-version job that contains the commit message
     # '[bot] Update version to <version>'
-    if: startsWith(github.event.head_commit.message, '[bot] Update version to')
+    #
+    # It can also be run manually (workflow_dispatch) as a dry run: everything
+    # runs except the final "Deploy to GitHub Pages" step, so the pipeline can
+    # be verified without actually publishing docs.
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.event.head_commit.message, '[bot] Update version to'))
     runs-on: ubuntu-latest
 
     steps:
@@ -50,6 +55,7 @@ jobs:
         cp -r build/html/* ../build/html/
 
     - name: Deploy to GitHub Pages
+      if: github.event_name != 'workflow_dispatch'
       uses: peaceiris/actions-gh-pages@1ef5a1b1df4c63fe21a2242edbee6cac921ece01 # v4.1.0
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
