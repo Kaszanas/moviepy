@@ -62,3 +62,5 @@ docs/build/
 
 # Publishing
 .pypirc
+
+.venv/
