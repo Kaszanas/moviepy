@@ -5,6 +5,11 @@ on:
     types: [published]
   workflow_dispatch:
     inputs:
+      dry_run:
+        description: 'Build and package only; skip publishing to PyPI'
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -16,9 +21,8 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/setup-python
         with:
           python-version: "3.12"
           cache: pip
@@ -30,4 +34,5 @@ jobs:
         run: |
           python -m build
       - name: Publish
-        uses: pypa/gh-action-pypi-publish@release/v1
+        if: github.event_name == 'release' || inputs.dry_run == false
+        uses: pypa/gh-action-pypi-publish@6733eb7d741f0b11ec6a39b58540dab7590f9b7d # v1.14.0

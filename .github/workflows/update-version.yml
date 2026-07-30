@@ -4,21 +4,33 @@ on:
   push:
     tags:
       - 'v*.*.*'  # Trigger on version tags
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version string to exercise the update logic with for a dry run (no commit is pushed)'
+        required: false
+        default: '0.0.0.dryrun'
 
 jobs:
   update-version:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          fetch-depth: 0  # ensures tags are fetched
+          fetch-depth: '0'  # ensures tags are fetched
+      - name: Set up Python
+        uses: ./.github/actions/setup-python
 
       - name: Extract version from tag
         id: get_version
         run: |
-          TAG=${GITHUB_REF#refs/tags/}
-          VERSION=${TAG#v}
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            TAG=${GITHUB_REF#refs/tags/}
+            VERSION=${TAG#v}
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Update version in pyproject.toml
@@ -36,6 +48,7 @@ jobs:
           sed -i "s/^version = \".*\"/version = \"${VERSION}\"/" docs/conf.py
 
       - name: Commit and push changes
+        if: github.event_name != 'workflow_dispatch'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "moviepy[bot]@users.noreply.github.com"
