@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: ./.github/actions/checkout-and-setup-python
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Run Black
@@ -33,9 +33,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: ./.github/actions/checkout-and-setup-python
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up Python
+        uses: ./.github/actions/setup-python
+        with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install dependencies
         run: |
@@ -51,9 +54,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: ./.github/actions/checkout-and-setup-python
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up Python
+        uses: ./.github/actions/setup-python
+        with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install dependencies
         run: |

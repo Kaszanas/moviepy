@@ -1,0 +1,20 @@
+name: 'Set up Python'
+description: 'Set up Python, using a pinned action SHA'
+inputs:
+  python-version:
+    description: 'Python version to pass to actions/setup-python. Leave empty to skip the setup-python step entirely.'
+    required: false
+    default: ''
+  cache:
+    description: 'Value forwarded to actions/setup-python cache input.'
+    required: false
+    default: ''
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      if: ${{ inputs.python-version != '' }}
+      uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: ${{ inputs.cache }}

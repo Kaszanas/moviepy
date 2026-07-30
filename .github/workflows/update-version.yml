@@ -16,9 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: ./.github/actions/checkout-and-setup-python
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: '0'  # ensures tags are fetched
+      - name: Set up Python
+        uses: ./.github/actions/setup-python
 
       - name: Extract version from tag
         id: get_version
